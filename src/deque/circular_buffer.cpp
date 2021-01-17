@@ -1,4 +1,6 @@
 #include "./circular_buffer.h"
+#include <stdexcept>
+
 
 template <typename T> circular_buffer<T>::circular_buffer(std::size_t size) : m_max_size{size}, 
     m_p_buffer {size > 0 ? new T[size] : nullptr}{
@@ -20,7 +22,7 @@ template <typename T> circular_buffer<T>::circular_buffer(const circular_buffer<
     }
 }
 
-template <typename T> void circular_buffer<T>::put(const T& item) {
+template <typename T> void circular_buffer<T>::put_front(const T& item) {
     m_p_buffer[m_header] = item;
     if(m_is_full) {
         m_tail = (m_tail + 1) % m_max_size;
@@ -29,17 +31,29 @@ template <typename T> void circular_buffer<T>::put(const T& item) {
     m_is_full = m_header == m_tail;
 }
 
-template <typename T> T circular_buffer<T>::get() {
-    if(is_empty()) {
-        return T();
+template <typename T> void circular_buffer<T>::put_back(const T& item) {
+    m_p_buffer[m_tail] = item;
+    if (m_is_full) {
+        m_header = (m_header + 1) % m_max_size;
     }
-
-    //Read data and advance the tail (we now have a free space)
-    T val = m_p_buffer[m_tail];
-    m_is_full = false;
     m_tail = (m_tail + 1) % m_max_size;
+    m_is_full = m_header == m_tail;
+}
 
-    return val;
+
+template <typename T> void circular_buffer<T>::pop_back() {
+    if(!is_empty()) {
+        m_is_full = false;
+        m_tail = (m_tail + 1) % m_max_size;
+    }
+}
+
+template<typename T>
+void circular_buffer<T>::pop_front(void) {
+    if (!is_empty()) {
+        m_is_full = false;
+        m_header = (m_header + 1) % m_max_size;
+    }
 }
 
 template <typename T>  bool circular_buffer<T>::is_empty() const{
@@ -69,6 +83,27 @@ template <typename T> std::size_t circular_buffer<T>::size() const {
     }
 
     return size;
+}
+
+template<typename T>
+const T& circular_buffer<T>::operator[](std::size_t pos) const {
+    return at(pos);
+}
+
+template<typename T>
+T& circular_buffer<T>::operator[](std::size_t pos) {
+    return pos;
+}
+
+template<typename T>
+const T& circular_buffer<T>::at(std::size_t pos) const {
+    return at(pos);
+}
+
+template<typename T> T& circular_buffer<T>::at(std::size_t pos) {
+    if (pos < 0)
+        throw std::invalid_argument(pos);
+    return m_p_buffer[m_header + (pos % m_tail)];
 }
 
 template <typename T> bool circular_buffer<T>::is_full() const {

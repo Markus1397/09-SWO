@@ -1,14 +1,18 @@
 #pragma once
 #include <cstddef>
 
+
 template <typename T> class circular_buffer {
 public:
 	circular_buffer(std::size_t size);
     circular_buffer(const circular_buffer<T>& other);
     ~circular_buffer();
-	void put(const T& item);
+	void put_front(const T& item);
+	void put_back(const T& item);
 
-	T get(void);
+
+	void pop_back(void);
+	void pop_front(void);
 
 	void reset(void);
 
@@ -19,6 +23,12 @@ public:
 	std::size_t capacity(void) const;
 
 	std::size_t size(void) const;
+
+	const T& operator [] (std::size_t pos) const;
+	T& operator [] (std::size_t pos);
+
+	const T& at(std::size_t pos) const;
+	T& at(std::size_t pos);
 
 private:
 	T* m_p_buffer {nullptr};
