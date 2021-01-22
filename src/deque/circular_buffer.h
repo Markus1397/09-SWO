@@ -150,6 +150,11 @@ template <typename T> void circular_buffer<T>::resize(std::size_t capacity) {
     }
     delete[] m_p_buffer;
     m_p_buffer = new_buffer;
+    if (m_tail == m_head && m_size >0) {
+        m_tail = m_max_size >= capacity ? 0 : m_max_size;
+    }
+    m_head = 0;
+    m_max_size = capacity;
 }
 
 template <typename T> circular_buffer<T>::~circular_buffer() {

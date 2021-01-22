@@ -174,6 +174,9 @@ namespace swo {
     private:
         circular_buffer<T>* m_p_buffer{ nullptr };
         size_type m_size{ 0 };
+
+        void resize_if_full(void);
+
     };
     //-------------------------------------------------
     //--------------------Deque------------------------
@@ -185,11 +188,11 @@ namespace swo {
 
     }
 
-    template <typename T> deque<T>::deque(size_type count) : m_size{ count },
-        m_p_buffer{ count > 0 ? new circular_buffer<T>(count) : nullptr } {
+    template <typename T> deque<T>::deque(size_type count) : deque<T>::deque(count, T{}) {
 
     }
-    template <typename T> deque<T>::deque(size_type count, T const& value) : deque::deque(count) {
+    template <typename T> deque<T>::deque(size_type count, T const& value) : m_size{ count },
+        m_p_buffer{ count > 0 ? new circular_buffer<T>(count) : nullptr } {
         for (int i = 0; i < count; i++) {
             m_p_buffer->push_front(value);
         }
@@ -278,12 +281,18 @@ namespace swo {
     }
 
     template<typename T> void deque<T>::push_back(T const& value) {
-        if (m_p_buffer != nullptr)
+        if (m_p_buffer != nullptr) {
+            resize_if_full();
             m_p_buffer->push_back(value);
+        }
+          
     }
     template<typename T> void deque<T>::push_back(T&& value) {
-        if (m_p_buffer != nullptr)
+        if (m_p_buffer != nullptr) {
+            resize_if_full();
             m_p_buffer->push_back(value);
+        }
+            
     }
     template<typename T> void deque<T>::pop_back() {
         if (m_p_buffer != nullptr)
@@ -291,12 +300,18 @@ namespace swo {
     }
 
     template<typename T> void deque<T>::push_front(T const& value) {
-        if (m_p_buffer != nullptr)
+        if (m_p_buffer != nullptr) {
+            resize_if_full();
             m_p_buffer->push_front(value);
+        }
+          
     }
     template<typename T> void deque<T>::push_front(T&& value) {
-        if (m_p_buffer != nullptr)
+        if (m_p_buffer != nullptr) {
+            resize_if_full();
             m_p_buffer->push_front(value);
+        }
+           
     }
     template<typename T> void deque<T>::pop_front() {
         if (m_p_buffer != nullptr)
@@ -342,10 +357,18 @@ namespace swo {
         }
     }
 
+
     template<typename T> deque<T>::~deque() {
         if (m_p_buffer != nullptr)
             delete m_p_buffer;
     }
+
+    template<typename T> void deque<T>::resize_if_full(void) {
+        if (m_p_buffer->is_full()) {
+            m_p_buffer->resize(m_p_buffer->capacity()+1);
+        }
+    }
+
 
 #pragma endregion
     //-------------------------------------------------
