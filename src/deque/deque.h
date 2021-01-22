@@ -207,8 +207,9 @@ namespace swo {
     }
 
     template<typename T> deque<T>::deque(std::initializer_list<T> init) : deque::deque(init.size()) {
+        int idx = 0;
         for (T i : init) {
-            push_back(i);
+            (*m_p_buffer)[idx++] = i;
         }
     }
 

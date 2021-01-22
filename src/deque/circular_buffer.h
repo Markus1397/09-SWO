@@ -145,7 +145,12 @@ template <typename T> std::size_t  circular_buffer<T>::prev(std::size_t curr) co
 
 template <typename T> void circular_buffer<T>::resize(std::size_t capacity) {
     T* new_buffer = new T[capacity];
-    for (int i = 0; i < m_size; i++) {
+    std::size_t num_to_cpy =  m_size;
+    if (m_size > capacity) {
+        num_to_cpy = capacity;
+        m_size = capacity;
+    }
+    for (int i = 0; i < num_to_cpy; i++) {
         new_buffer[i] = at(i);
     }
     delete[] m_p_buffer;
