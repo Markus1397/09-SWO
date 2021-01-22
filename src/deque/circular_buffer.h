@@ -30,12 +30,13 @@ public:
 
 	const T& at(std::size_t pos) const;
 	T& at(std::size_t pos);
+    void resize(std::size_t capacity);
 
 private:
 	T* m_p_buffer {nullptr};
     std::size_t m_head {0};
     std::size_t m_tail {0};
-	const std::size_t m_max_size;
+	std::size_t m_max_size;
     std::size_t m_size {0};
 
     std::size_t next(std::size_t curr) const;
@@ -140,6 +141,15 @@ template <typename T> std::size_t  circular_buffer<T>::prev(std::size_t curr) co
     if (curr == 0)
         return m_max_size - 1;
     return (curr - 1) % m_max_size;
+}
+
+template <typename T> void circular_buffer<T>::resize(std::size_t capacity) {
+    T* new_buffer = new T[capacity];
+    for (int i = 0; i < m_size; i++) {
+        new_buffer[i] = at(i);
+    }
+    delete[] m_p_buffer;
+    m_p_buffer = new_buffer;
 }
 
 template <typename T> circular_buffer<T>::~circular_buffer() {

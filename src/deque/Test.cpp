@@ -1,4 +1,5 @@
 #include <iostream>
+#include <deque>
 #include "deque.h"
 #include "circular_buffer.h"
 
@@ -6,7 +7,7 @@ using namespace swo;
 
 
 int main() {
-	circular_buffer<int> c{7};
+	circular_buffer<int> c{ 7 };
 	for (int i = 0; i <= 6; i++) {
 		c.push_front(i);
 	}
@@ -16,17 +17,17 @@ int main() {
 	}
 	std::cout << std::endl;
 	deque<int> d(7);
+	deque<int> d2(7);
 	for (int i = 0; i <= 6; i++) {
 		d.push_front(i);
 	}
 	d.pop_front();
-	if (d.begin() == d.end()) {
-		std::cout << "same";
-
-	}
-	/*for (int val : d) {
+	for (int val : d) {
 		std::cout << val << '|';
-	}*/
+	}
+	if (d.begin() < d.end()) {
+		std::cout <<"working" << std::endl;
+	}
 	std::cout << std::endl;
 	return EXIT_SUCCESS;
 }

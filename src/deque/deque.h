@@ -19,7 +19,6 @@
 #include "./circular_buffer.h"
 
 namespace swo {
-
     template <typename T> class deque final {
     public:
         using const_reference = T const&;
@@ -27,12 +26,39 @@ namespace swo {
         using size_type = std::size_t;
         using value_type = T;
 
-        friend bool operator == (deque const& lhs, deque const& rhs) noexcept;
-        friend bool operator != (deque const& lhs, deque const& rhs) noexcept;
-        friend bool operator <  (deque const& lhs, deque const& rhs) noexcept;
-        friend bool operator <= (deque const& lhs, deque const& rhs) noexcept;
-        friend bool operator >  (deque const& lhs, deque const& rhs) noexcept;
-        friend bool operator >= (deque const& lhs, deque const& rhs) noexcept;
+
+        friend bool operator == (deque const& lhs, deque const& rhs) noexcept {
+            if (rhs.m_size != lhs.m_size)
+                return false;
+            for (size_t i = 0; i < lhs.m_size; i++) {
+                if (rhs[i] != lhs[i])
+                    return false;
+            }
+
+            return true;
+        }
+        friend bool operator != (deque const& lhs, deque const& rhs) noexcept {
+            return !(lhs == rhs);
+        }
+        friend bool operator <  (deque const& lhs, deque const& rhs) noexcept {
+            const typename deque<T>::size_type min_size = std::min(lhs.m_size, rhs.m_size);
+            for (size_t i = 0; i < min_size; i++) {
+                if (lhs[i] < rhs[i])
+                    return true;
+                else if (lhs[i] > rhs[i])
+                    return false;
+            }
+            return lhs.m_size < rhs.m_size;
+        }
+        friend bool operator <= (deque const& lhs, deque const& rhs) noexcept {
+            return lhs < rhs || lhs == rhs;
+        }
+        friend bool operator >  (deque const& lhs, deque const& rhs) noexcept {
+            return rhs < lhs;
+        }
+        friend bool operator >= (deque const& lhs, deque const& rhs) noexcept {
+            return lhs > rhs || lhs == rhs;
+        }
 
         friend void swap(deque <T>& a, deque <T>& b) noexcept {
             a.swap(b);
@@ -46,12 +72,24 @@ namespace swo {
             using reference = T&;
             using value_type = T;
 
-            friend bool operator == (iterator const& lhs, iterator const& rhs) noexcept;
-            friend bool operator != (iterator const& lhs, iterator const& rhs) noexcept;
-            friend bool operator <  (iterator const& lhs, iterator const& rhs) noexcept;
-            friend bool operator <= (iterator const& lhs, iterator const& rhs) noexcept;
-            friend bool operator >  (iterator const& lhs, iterator const& rhs) noexcept;
-            friend bool operator >= (iterator const& lhs, iterator const& rhs) noexcept;
+            friend bool operator == (iterator const& lhs, iterator const& rhs) noexcept {
+                return lhs.m_p_buffer == rhs.m_p_buffer && lhs.m_index == rhs.m_index;
+            }
+            friend bool operator != (iterator const& lhs, iterator const& rhs) noexcept {
+                return !(lhs == rhs);
+            }
+            friend bool operator <  (iterator const& lhs, iterator const& rhs) noexcept {
+                return (*lhs.m_p_buffer)[lhs.m_index] < (*rhs.m_p_buffer)[rhs.m_index];
+            }
+            friend bool operator <= (iterator const& lhs, iterator const& rhs) noexcept {
+                return (*lhs.m_p_buffer)[lhs.m_index] <= (*rhs.m_p_buffer)[rhs.m_index];
+            }
+            friend bool operator >  (iterator const& lhs, iterator const& rhs) noexcept {
+                return (*lhs.m_p_buffer)[lhs.m_index] > (*rhs.m_p_buffer)[rhs.m_index];
+            }
+            friend bool operator >= (iterator const& lhs, iterator const& rhs) noexcept {
+                return (*lhs.m_p_buffer)[lhs.m_index] >= (*rhs.m_p_buffer)[rhs.m_index];
+            }
 
             friend iterator operator + (iterator itor, difference_type offset) noexcept {
                 return itor += offset;
@@ -81,7 +119,7 @@ namespace swo {
             iterator& operator += (difference_type offset) noexcept;
             iterator& operator -= (difference_type offset) noexcept;
         private:
-            friend class deque<T>;
+            friend class deque;
             iterator(circular_buffer<value_type>* buffer, size_type idx);
             circular_buffer<value_type>* m_p_buffer{ nullptr };
             size_type m_index{ 0 };
@@ -222,6 +260,23 @@ namespace swo {
         return *this[pos];
     }
 
+
+    template<typename T> const T& deque<T>::back() const {
+        return at(size() - 1);
+    }
+
+    template<typename T> T& deque<T>::back() {
+        return at(size() - 1);
+    }
+
+    template<typename T> const T& deque<T>::front() const {
+        return at(0);
+    }
+
+    template<typename T> T& deque<T>::front() {
+        return at(0);
+    }
+
     template<typename T> void deque<T>::push_back(T const& value) {
         if (m_p_buffer != nullptr)
             m_p_buffer->push_back(value);
@@ -254,55 +309,42 @@ namespace swo {
     }
 
     template<typename T> typename deque<T>::iterator deque<T>::begin() noexcept {
-        deque<T>::iterator iter{};//deque<T>::iterator{ m_p_buffer,0 };
-        iter.m_p_buffer = m_p_buffer;
-        return iter;
+        return deque<T>::iterator{ m_p_buffer,0 };
     }
 
     template<typename T> typename deque<T>::iterator deque<T>::end() noexcept {
-        return deque<T>::iterator{}; //deque<T>::iterator{ m_p_buffer, size() - 1 };
+        return deque<T>::iterator{ m_p_buffer, size()};
     }
 
+
+    template<typename T> bool deque<T>::empty() const noexcept {
+        if (m_p_buffer == nullptr)
+            return true;
+        return m_p_buffer->is_empty();
+    }
+
+    template<typename T> void deque<T>::clear() noexcept {
+        if (m_p_buffer == nullptr)
+            m_p_buffer->reset();
+    }
+
+    template<typename T> void deque<T>::resize(size_type count) {
+        resize(count, T{});
+    }
+
+    template<typename T> void deque<T>::resize(size_type count, T const& value) {
+        m_size = count;
+        if (count >= 0 && m_p_buffer != nullptr) {
+            m_p_buffer->resize(count);
+            while (count > size()) {
+                push_back(value);
+            }
+        }
+    }
 
     template<typename T> deque<T>::~deque() {
         if (m_p_buffer != nullptr)
             delete m_p_buffer;
-    }
-
-
-    template<typename T> bool operator == (deque<T> const& lhs, deque<T> const& rhs) noexcept {
-
-        if (rhs.m_size != lhs.m_size)
-            return false;
-        for (size_t i = 0; i < lhs.m_size; i++) {
-            if (rhs[i] != lhs[i])
-                return false;
-        }
-
-        return true;
-    }
-
-    template<typename T> bool operator != (deque<T> const& lhs, deque<T> const& rhs) noexcept {
-        return !lhs == rhs;
-    }
-    template<typename T> bool operator < (deque<T> const& lhs, deque<T> const& rhs) noexcept {
-        const typename deque<T>::size_type min_size = std::min(lhs.m_size, rhs.m_size);
-        for (size_t i = 0; i < min_size; i++) {
-            if (lhs[i] < rhs[i])
-                return true;
-            else if (lhs[i] > rhs[i])
-                return false;
-        }
-        return lhs.m_size < rhs.m_size;
-    }
-    template<typename T> bool operator <= (deque<T> const& lhs, deque<T> const& rhs) noexcept {
-        return lhs < rhs || lhs == rhs;
-    }
-    template<typename T> bool operator > (deque<T> const& lhs, deque<T> const& rhs) noexcept {
-        return rhs < lhs;
-    }
-    template<typename T> bool operator >= (deque<T> const& lhs, deque<T> const& rhs) noexcept {
-        return lhs > rhs || lhs == rhs;
     }
 
 #pragma endregion
@@ -311,6 +353,10 @@ namespace swo {
     //-------------------------------------------------
 #pragma region Iterator
     template<typename T> deque<T>::iterator::iterator() : m_p_buffer{ nullptr }, m_index{ 0 } {
+
+    }
+
+    template<typename T> deque<T>::iterator::iterator(circular_buffer<value_type>* buffer, size_type idx) : m_p_buffer {buffer}, m_index{idx}{
 
     }
 
@@ -357,18 +403,6 @@ namespace swo {
     template<typename T> typename deque<T>::iterator& deque<T>::iterator::operator=(iterator const& src) {
         m_index =  src.m_index; 
         m_p_buffer= src.m_p_buffer;
-    }
-
-
-   
-    template<typename T>  bool operator==(typename deque<T>::iterator const& lhs, typename deque<T>::iterator const& rhs) noexcept {
-        return lhs.m_p_buffer == rhs.m_p_buffer && lhs.m_index == rhs.m_index;
-    }
-
-   
-
-    template<typename T>  bool operator!=(typename deque<T>::iterator const& lhs, typename deque<T>::iterator const& rhs) noexcept {
-        return false;
     }
 
     #pragma endregion
