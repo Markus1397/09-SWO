@@ -286,7 +286,7 @@ namespace swo {
         return !lhs == rhs;
     }
     template<typename T> bool operator < (deque<T> const& lhs, deque<T> const& rhs) noexcept {
-        const deque<T>::size_type min_size = std::min(lhs.m_size, rhs.m_size);
+        const typename deque<T>::size_type min_size = std::min(lhs.m_size, rhs.m_size);
         for (size_t i = 0; i < min_size; i++) {
             if (lhs[i] < rhs[i])
                 return true;
@@ -326,13 +326,13 @@ namespace swo {
         m_index -= offset;
         return *this;
     }
-    template<typename T> typename T& deque<T>::iterator::operator *() {
+    template<typename T> T& deque<T>::iterator::operator *() {
         return (*m_p_buffer)[m_index];
     }
-    template<typename T> typename T* deque<T>::iterator::operator ->() {
+    template<typename T> T* deque<T>::iterator::operator ->() {
         return (*m_p_buffer)[m_index];
     }
-    template<typename T> typename T& deque<T>::iterator::operator[](deque<T>::iterator::difference_type offset) {
+    template<typename T> T& deque<T>::iterator::operator[](deque<T>::iterator::difference_type offset) {
         return (*m_p_buffer)[m_index + offset];
     }
     template<typename T> typename deque<T>::iterator& deque<T>::iterator::operator++() noexcept {
@@ -361,6 +361,9 @@ namespace swo {
 
 
    
+    template<typename T>  bool operator==(typename deque<T>::iterator const& lhs, typename deque<T>::iterator const& rhs) noexcept {
+        return lhs.m_p_buffer == rhs.m_p_buffer && lhs.m_index == rhs.m_index;
+    }
 
    
 
