@@ -2,215 +2,116 @@
 #include <deque>
 #include "deque.h"
 #include "circular_buffer.h"
+#include <functional>
 
 using namespace swo;
 
-void simple_iterator_test() {
-	deque<int> d(7);
-	std::deque<int> dstd(7);
-	
+
+template <typename T> void print_deque(T& d) {
+	for (int val : d) {
+		std::cout << val << '|';
+	}
+	std::cout << std::endl;
+}
+
+template <typename T> void simple_iterator_test() {
+	T d(7);
 	for (int i = 0; i <= 6; i++) {
 		d.push_front(i);
-		dstd.push_front(i);
 	}
-	std::cout << "Own Implementation" << std::endl;
-	for (int val : d) {
-		std::cout << val << '|';
-	}
-	std::cout << std::endl;
-	std::cout << "Standard Implementation" << std::endl;
-	for (int val : dstd){
-		std::cout << val << '|';
-	}
-	std::cout << std::endl;
+	print_deque<T>(d);
+	
 }
 
-void simple_init_list_test() {
-	deque<int> d{ {7,1,2,3,4,5} };
-	std::deque<int> dstd{ {7,1,2,3,4,5} };
-
-	std::cout << "Own Implementation" << std::endl;
-	for (int val : d) {
-		std::cout << val << '|';
-	}
-	std::cout << std::endl;
-	std::cout << "Standard Implementation" << std::endl;
-	for (int val : dstd) {
-		std::cout << val << '|';
-	}
-	std::cout << std::endl;
+template <typename T>  void simple_init_list_test() {
+	T d{ {7,1,2,3,4,5} };
+	print_deque<T>(d);
 }
 
-void simple_iterator_test_with_value() {
-	deque<int> d(7,2);
-	std::deque<int> dstd(7,2);
-
-	std::cout << "Own Implementation" << std::endl;
-	for (int val : d) {
-		std::cout << val << '|';
-	}
-	std::cout << std::endl;
-	std::cout << "Standard Implementation" << std::endl;
-	for (int val : dstd) {
-		std::cout << val << '|';
-	}
-	std::cout << std::endl;
+template <typename T> void simple_iterator_test_with_value() {
+	T d(7,2);
+	print_deque<T>(d);
 }
 
-void pop_front() {
-	deque<int> d{ {7,1,2,3,4,5} };
-	std::deque<int> dstd{ {7,1,2,3,4,5} };
-
+template <typename T> void pop_front() {
+	T d{ {7,1,2,3,4,5} };
 	d.pop_front();
-	std::cout << "Own Implementation" << std::endl;
-	for (int val : d) {
-		std::cout << val << '|';
-	}
-	dstd.pop_front();
-	std::cout << std::endl;
-	std::cout << "Standard Implementation" << std::endl;
-	for (int val : dstd) {
-		std::cout << val << '|';
-	}
-	std::cout << std::endl;
+	print_deque<T>(d);
 }
 
-void pop_back() {
-	deque<int> d{ {7,1,2,3,4,5} };
-	std::deque<int> dstd{ {7,1,2,3,4,5} };
-
+template <typename T> void pop_back() {
+	T d{ {7,1,2,3,4,5} };
 	d.pop_back();
-	std::cout << "Own Implementation" << std::endl;
-	for (int val : d) {
-		std::cout << val << '|';
-	}
-	dstd.pop_back();
-	std::cout << std::endl;
-	std::cout << "Standard Implementation" << std::endl;
-	for (int val : dstd) {
-		std::cout << val << '|';
-	}
-	std::cout << std::endl;
+	print_deque<T>(d);
 }
 
-void pop_front_and_push_back() {
-	deque<int> d{ {7,1,2,3,4,5} };
-	std::deque<int> dstd{ {7,1,2,3,4,5} };
+template <typename T> void pop_front_and_push_back() {
+	T d{ {7,1,2,3,4,5} };
 
 	d.pop_front();
 	d.push_back(6);
-	std::cout << "Own Implementation" << std::endl;
-	for (int val : d) {
-		std::cout << val << '|';
-	}
-	dstd.pop_front();
-	dstd.push_back(6);
-	std::cout << std::endl;
-	std::cout << "Standard Implementation" << std::endl;
-	for (int val : dstd) {
-		std::cout << val << '|';
-	}
-	std::cout << std::endl;
+	print_deque<T>(d);
 }
 
-void pop_front_and_push_front() {
-	deque<int> d{ {7,1,2,3,4,5} };
-	std::deque<int> dstd{ {7,1,2,3,4,5} };
-
+template <typename T> void pop_front_and_push_front() {
+	T d{ {7,1,2,3,4,5} };
+	
 	d.pop_front();
 	d.push_front(6);
-	std::cout << "Own Implementation" << std::endl;
-	for (int val : d) {
-		std::cout << val << '|';
-	}
-	dstd.pop_front();
-	dstd.push_front(6);
-	std::cout << std::endl;
-	std::cout << "Standard Implementation" << std::endl;
-	for (int val : dstd) {
-		std::cout << val << '|';
-	}
-	std::cout << std::endl;
+	print_deque<T>(d);
 }
 
-void shrink() {
-	deque<int> d{ {7,1,2,3,4,5} };
-	std::deque<int> dstd{ {7,1,2,3,4,5} };
-
+template <typename T> void shrink() {
+	T d{ {7,1,2,3,4,5} };
+	print_deque<T>(d);
+	std::cout << "resize" << std::endl;
 	d.resize(5);
-	std::cout << "Own Implementation" << std::endl;
-	for (int val : d) {
-		std::cout << val << '|';
-	}
-	dstd.resize(5);
-	std::cout << std::endl;
-	std::cout << "Standard Implementation" << std::endl;
-	for (int val : dstd) {
-		std::cout << val << '|';
-	}
-	std::cout << std::endl;
+	print_deque<T>(d);
 }
 
-void grow() {
-	deque<int> d{ {7,1,2,3,4,5} };
-	std::deque<int> dstd{ {7,1,2,3,4,5} };
-
+template <typename T> void grow() {
+	T d{ {7,1,2,3,4,5} };
+	print_deque<T>(d);
+	std::cout << "resize" << std::endl;
 	d.resize(10);
-	std::cout << "Own Implementation" << std::endl;
-	for (int val : d) {
-		std::cout << val << '|';
-	}
-	dstd.resize(10);
-	std::cout << std::endl;
-	std::cout << "Standard Implementation" << std::endl;
-	for (int val : dstd) {
-		std::cout << val << '|';
-	}
-	std::cout << std::endl;
+	print_deque<T>(d);
 }
 
-void grow_with_value() {
-	deque<int> d{ {7,1,2,3,4,5} };
-	std::deque<int> dstd{ {7,1,2,3,4,5} };
-
+template <typename T> void grow_with_value() {
+	T d{ {7,1,2,3,4,5} };
+	print_deque<T>(d);
+	std::cout << "resize" << std::endl;
 	d.resize(10,42);
-	std::cout << "Own Implementation" << std::endl;
-	for (int val : d) {
-		std::cout << val << '|';
-	}
-	dstd.resize(10,42);
-	std::cout << std::endl;
-	std::cout << "Standard Implementation" << std::endl;
-	for (int val : dstd) {
-		std::cout << val << '|';
-	}
-	std::cout << std::endl;
+	print_deque<T>(d);
 }
 
 void print_divider() {
 	std::cout << "---------------------------" << std::endl;
 }
 
-int main() {
-	simple_iterator_test();
-	print_divider();
-	simple_init_list_test();
-	print_divider();
-	simple_iterator_test_with_value();
-	print_divider();
-	pop_front();
-	print_divider();
-	pop_back();
-	print_divider();
-	pop_front_and_push_back();
-	print_divider();
-	pop_front_and_push_front();
-	print_divider();
-	shrink();
-	print_divider();
-	grow();
-	print_divider();
-	grow_with_value();
+void test_function(std::function<void (void)> funcOwn, std::function<void(void)> funcStd) {
+	std::cout << "Own Implementation" << std::endl;
+	funcOwn();
 	std::cout << std::endl;
+	std::cout << "Standard Implementation" << std::endl;
+	funcStd();
+	print_divider();
+}
+
+
+
+int main() {
+
+	test_function(simple_iterator_test<deque<int>>, simple_iterator_test<std::deque<int>>);
+	test_function(simple_init_list_test<deque<int>>, simple_init_list_test<std::deque<int>>);
+	test_function(simple_iterator_test_with_value<deque<int>>, simple_iterator_test_with_value<std::deque<int>>);
+	test_function(pop_front<deque<int>>, pop_front<std::deque<int>>);
+	test_function(pop_back<deque<int>>, pop_back<std::deque<int>>);
+	test_function(pop_front_and_push_back<deque<int>>, pop_front_and_push_back<std::deque<int>>);
+	test_function(pop_front_and_push_front<deque<int>>, pop_front_and_push_front<std::deque<int>>);
+	test_function(shrink<deque<int>>, shrink<std::deque<int>>);
+	test_function(grow<deque<int>>, grow<std::deque<int>>);
+	test_function(grow_with_value<deque<int>>, grow_with_value<std::deque<int>>);
+
 	return EXIT_SUCCESS;
 }
