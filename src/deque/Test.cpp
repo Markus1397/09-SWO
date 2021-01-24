@@ -8,7 +8,7 @@ using namespace swo;
 
 
 template <typename T> void print_deque(T& d) {
-	for (int val : d) {
+	for (decltype(d.front()) val : d) {
 		std::cout << val << '|';
 	}
 	std::cout << std::endl;
@@ -85,6 +85,22 @@ template <typename T> void grow_with_value() {
 	print_deque<T>(d);
 }
 
+template <typename T> void invalid_index() {
+	T d{ 2 };
+	print_deque<T>(d);
+	try {
+		d[3];
+	}
+	catch (std::exception& e) {
+		std::cout<< "Exception catched" <<e.what() << std::endl;
+	}
+}
+
+template <typename T> void simple_string_test() {
+	deque<std::string> d{ {"John","Max","Jane"} };
+	print_deque<deque<std::string>>(d);
+}
+
 void print_divider() {
 	std::cout << "---------------------------" << std::endl;
 }
@@ -101,7 +117,6 @@ void test_function(std::function<void (void)> funcOwn, std::function<void(void)>
 
 
 int main() {
-
 	test_function(simple_iterator_test<deque<int>>, simple_iterator_test<std::deque<int>>);
 	test_function(simple_init_list_test<deque<int>>, simple_init_list_test<std::deque<int>>);
 	test_function(simple_iterator_test_with_value<deque<int>>, simple_iterator_test_with_value<std::deque<int>>);
@@ -112,6 +127,7 @@ int main() {
 	test_function(shrink<deque<int>>, shrink<std::deque<int>>);
 	test_function(grow<deque<int>>, grow<std::deque<int>>);
 	test_function(grow_with_value<deque<int>>, grow_with_value<std::deque<int>>);
-
+	//test_function(invalid_index<deque<int>>, invalid_index<std::deque<int>>);
+	test_function(simple_string_test<deque<std::string>>, simple_string_test<std::deque<std::string>>);
 	return EXIT_SUCCESS;
 }
